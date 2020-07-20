@@ -7,6 +7,7 @@
       :data="data2"
       :props="defaultProps"
       :filter-node-method="filterNode"
+      @node-click="handleNodeClick"
       class="filter-tree"
       default-expand-all
     />
@@ -21,7 +22,6 @@ export default {
   data() {
     return {
       filterText: '',
-      a:"",
       data2: this.demo(),
       defaultProps: {
         children: 'children',
@@ -41,13 +41,17 @@ export default {
       return data.label.indexOf(value) !== -1
     },
     demo(){
+        getHost("").then(response => {
+        this.data2 = response.data
+      })
+    },
+    handleNodeClick(data){
+      console.log(data)
+    //   getHost(data.id).then(response => {
         
-        getHost().then(res=>{
-             console.log(res)
-        })
-        
-        // this.data2 = d
-        }
+    //     data.children = response.data
+    //   })
+    }
     
   }
 }

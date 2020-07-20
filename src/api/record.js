@@ -7,9 +7,10 @@ export function getCollection() {
     })
 }
 
-export function getHost() {
+export function getHost(parent) {
     return request({
         url: '/record/host',
-        method: 'get'
+        method: 'get',
+        params:{ parent_id:parent }
     })
 }

@@ -15,16 +15,14 @@
 </template>
 
 <script>
-
+import { getHost } from '@/api/record'
 export default {
 
   data() {
     return {
       filterText: '',
-      data2: [
-        {"id":1,"label":"angelapi.bluemoon.com.cn","children":[]},
-        {"id":2,"label":"tmallapi.bluemoon.com.cn","children":[]}]
-      ,
+      a:"",
+      data2: this.demo(),
       defaultProps: {
         children: 'children',
         label: 'label'
@@ -41,7 +39,16 @@ export default {
     filterNode(value, data) {
       if (!value) return true
       return data.label.indexOf(value) !== -1
-    }
+    },
+    demo(){
+        
+        getHost().then(res=>{
+             console.log(res)
+        })
+        
+        // this.data2 = d
+        }
+    
   }
 }
 </script>

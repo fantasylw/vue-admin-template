@@ -91,10 +91,23 @@ export const constantRoutes = [
   },
 
   {
+    path: '/interface',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Form',
+        component: () => import('@/views/interface/record'),
+        meta: { title: '接口记录', icon: 'form' }
+      }
+    ]
+  },
+
+  {
     path: '/nested',
     component: Layout,
     redirect: '/nested/menu1',
-    name: 'Nested',
+    name: '菜单',
     meta: {
       title: 'Nested',
       icon: 'nested'

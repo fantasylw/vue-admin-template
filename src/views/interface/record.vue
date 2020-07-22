@@ -42,12 +42,12 @@
                 :old-string="oldStr"
                 :new-string="newStr"
                 outputFormat="side-by-side"
-                :context="10"
+                :context="10000000"
               ></code-diff>
             </el-tab-pane>
-            <el-tab-pane label="配置管理">配置管理</el-tab-pane>
-            <el-tab-pane label="角色管理">角色管理</el-tab-pane>
-            <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
+            <el-tab-pane label="配置管理">
+              <json-diff></json-diff>
+            </el-tab-pane>
           </el-tabs>
         </sticky>
       </el-col>
@@ -57,11 +57,12 @@
 
 <script>
 import Sticky from "@/components/Sticky";
+import JsonDiff from "@/components/JsonDiff";
 import CodeDiff from "vue-code-diff";
 import { getHost } from "@/api/record";
 import { getApiDoc, getApiDocTimeLines } from "@/api/api";
 export default {
-  components: { CodeDiff, Sticky },
+  components: { CodeDiff, Sticky,JsonDiff},
   data() {
     return {
       filterText: "",
@@ -103,7 +104,10 @@ export default {
       }
     },
     showTimeLine(item) {
-      this.oldStr = item.source.query_schema
+      this.oldStr = JSON.stringify(item.source.query_schema,null,4)
+      if(item.target != null){
+        this.newStr = JSON.stringify(item.target.query_schema,null,4)
+        }
       console.log(item);
     }
   }

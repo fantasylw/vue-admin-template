@@ -25,7 +25,7 @@
         <div class="block" style="height:820px;">
           <el-scrollbar id="scrollbar-tree" style="height:100%;">
             <el-timeline v-for="item in timelines" :key="item">
-              <el-timeline-item :timestamp="item.version" placement="top">
+              <el-timeline-item :timestamp="item.createdAt" placement="top">
                 <el-card shadow="hover" @click.native="showTimeLine(item)">
                   <el-tag type="info">{{item.msg}}</el-tag>
                 </el-card>
@@ -38,14 +38,18 @@
         <sticky :sticky-top="10">
           <el-tabs type="border-card">
             <el-tab-pane label="差异">
+              <div class="block" style="height:820px;">
+               <el-scrollbar style="height:100%;">
               <code-diff
                 :old-string="oldStr"
                 :new-string="newStr"
-                outputFormat="side-by-side"
-                :context="10"
+                :outputFormat="outputFormat"
+                :context="100"
               ></code-diff>
+              </el-scrollbar>
+              </div>
             </el-tab-pane>
-            <el-tab-pane label="配置管理">配置管理</el-tab-pane>
+            <el-tab-pane label="配置管理"></el-tab-pane>
             <el-tab-pane label="角色管理">角色管理</el-tab-pane>
             <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
           </el-tabs>
@@ -56,12 +60,13 @@
 </template>
 
 <script>
+
 import Sticky from "@/components/Sticky";
 import CodeDiff from "vue-code-diff";
 import { getHost } from "@/api/record";
 import { getApiDoc, getApiDocTimeLines } from "@/api/api";
 export default {
-  components: { CodeDiff, Sticky },
+  components: { CodeDiff, Sticky},
   data() {
     return {
       filterText: "",
@@ -73,7 +78,8 @@ export default {
       oldStr: "old code",
       newStr: "new code",
       timelines: [],
-      apidoc: {}
+      apidoc: {},
+      outputFormat:"side-by-side"
     };
   },
   watch: {
@@ -103,8 +109,15 @@ export default {
       }
     },
     showTimeLine(item) {
-      this.oldStr = item.source.query_schema
       console.log(item);
+      this.oldStr = JSON.stringify(item.source, null, 4)
+      if(item.target != null){
+         this.newStr = JSON.stringify(item.target, null, 4)
+      }
+      else{
+
+      }
+      
     }
   }
 };

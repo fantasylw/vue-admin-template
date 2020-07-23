@@ -43,15 +43,26 @@
               <code-diff
                 :old-string="oldStr"
                 :new-string="newStr"
+<<<<<<< HEAD
                 :outputFormat="outputFormat"
                 :context="100"
+=======
+                outputFormat="side-by-side"
+                :context="10000000"
+>>>>>>> 89dcb3e430a05accacb0cc37dcc72e4bf915b2be
               ></code-diff>
               </el-scrollbar>
               </div>
             </el-tab-pane>
+<<<<<<< HEAD
             <el-tab-pane label="配置管理"></el-tab-pane>
             <el-tab-pane label="角色管理">角色管理</el-tab-pane>
             <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
+=======
+            <el-tab-pane label="配置管理">
+              <json-diff></json-diff>
+            </el-tab-pane>
+>>>>>>> 89dcb3e430a05accacb0cc37dcc72e4bf915b2be
           </el-tabs>
         </sticky>
       </el-col>
@@ -62,11 +73,16 @@
 <script>
 
 import Sticky from "@/components/Sticky";
+import JsonDiff from "@/components/JsonDiff";
 import CodeDiff from "vue-code-diff";
 import { getHost } from "@/api/record";
 import { getApiDoc, getApiDocTimeLines } from "@/api/api";
 export default {
+<<<<<<< HEAD
   components: { CodeDiff, Sticky},
+=======
+  components: { CodeDiff, Sticky,JsonDiff},
+>>>>>>> 89dcb3e430a05accacb0cc37dcc72e4bf915b2be
   data() {
     return {
       filterText: "",
@@ -109,6 +125,13 @@ export default {
       }
     },
     showTimeLine(item) {
+<<<<<<< HEAD
+=======
+      this.oldStr = JSON.stringify(item.source.query_schema,null,4)
+      if(item.target != null){
+        this.newStr = JSON.stringify(item.target.query_schema,null,4)
+        }
+>>>>>>> 89dcb3e430a05accacb0cc37dcc72e4bf915b2be
       console.log(item);
       this.oldStr = JSON.stringify(item.source, null, 4)
       if(item.target != null){

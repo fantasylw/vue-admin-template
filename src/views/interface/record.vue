@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row :gutter="10">
-      <el-col :xs="2" :sm="3" :md="4" :lg="5" :xl="5">
+      <el-col :xs="2" :sm="3" :md="3" :lg="4" :xl="4">
         <sticky :sticky-top="10">
           <el-input v-model="filterText" placeholder="Filter keyword" style="margin-bottom:30px;" />
         </sticky>
@@ -21,39 +21,27 @@
           </div>
         </sticky>
       </el-col>
-      <el-col :xs="3" :sm="3" :md="4" :lg="4" :xl="4">
+      <el-col :xs="3" :sm="3" :md="3" :lg="3" :xl="3">
         <div class="block" style="height:820px;">
           <el-scrollbar id="scrollbar-tree" style="height:100%;">
             <el-timeline v-for="item in timelines" :key="item">
               <el-timeline-item :timestamp="item.createdAt" placement="top">
                 <el-card shadow="hover" @click.native="showTimeLine(item)">
-                  <el-tag type="info">{{item.msg}}</el-tag>
+                  {{item.msg}}
                 </el-card>
               </el-timeline-item>
             </el-timeline>
           </el-scrollbar>
         </div>
       </el-col>
-      <el-col :xs="3" :sm="4" :md="5" :lg="5" :xl="14">
-        <sticky :sticky-top="10">
-          <el-tabs type="border-card">
-            <el-tab-pane label="差异">
-              <div class="block" style="height:820px;">
-               <el-scrollbar style="height:100%;">
-              <code-diff
-                :old-string="oldStr"
-                :new-string="newStr"
-                outputFormat="side-by-side"
-                :context="10000000"
-              ></code-diff>
-              </el-scrollbar>
+      <el-col :xs="3" :sm="4" :md="5" :lg="8" :xl="17">
+          <el-collapse v-model="activeNames" v-for="diff in diffTabs" :key="diff" @change="handleChange">
+            <el-collapse-item :title="diff.name" name="1">
+               <div>
+                  <iframe :src="diff.url" style="height:860px;width:100%"></iframe>
               </div>
-            </el-tab-pane>
-            <el-tab-pane label="配置管理">
-              <iframe src="http://127.0.0.1:8000/jsondiff/5f179c54ba532fcd6248e409" style="height:860px;width:1200px"></iframe>
-            </el-tab-pane>
-          </el-tabs>
-        </sticky>
+            </el-collapse-item>
+          </el-collapse>
       </el-col>
     </el-row>
   </div>
@@ -63,11 +51,11 @@
 
 import Sticky from "@/components/Sticky";
 import JsonDiff from "@/components/JsonDiff";
-import CodeDiff from "vue-code-diff";
 import { getHost } from "@/api/record";
 import { getApiDoc, getApiDocTimeLines } from "@/api/api";
+import { forEach } from '../../../www/js/underscore-min';
 export default {
-  components: { CodeDiff, Sticky,JsonDiff},
+  components: { Sticky,JsonDiff},
   data() {
     return {
       filterText: "",
@@ -80,7 +68,9 @@ export default {
       newStr: "new code",
       timelines: [],
       apidoc: {},
-      outputFormat:"side-by-side"
+      outputFormat:"side-by-side",
+      timelineUrl:null,
+      diffTabs:[]
     };
   },
   watch: {
@@ -111,9 +101,31 @@ export default {
     },
     showTimeLine(item) {
       console.log(item);
-      this.oldStr = JSON.stringify(item.source, null, 4)
-      if(item.target != null){
-         this.newStr = JSON.stringify(item.target, null, 4)
+      this.diffTabs = []
+      // 请求方法变更
+      if(item.diff != null){
+          if(item.diff.method[0]==false){
+            var tab = {"name":"method","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=method"}
+            this.diffTabs.push(tab)
+          }
+          // 查询参数变更
+          if(item.diff.query_schema[0]==false){
+            var tab = {"name":"query_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=query_schema"}
+            this.diffTabs.push(tab)
+          }
+          if(item.diff.reponse_schema[0]==false){
+            var tab = {"name":"reponse_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=reponse_schema"}
+            this.diffTabs.push(tab)
+          }
+          if(item.diff.request_schema[0]==false){
+            var tab = {"name":"request_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=request_schema"}
+            this.diffTabs.push(tab)
+          }
+      }
+      else{
+        this.diffTabs.push({"name":"query_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=query_schema"})
+        this.diffTabs.push({"name":"reponse_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=reponse_schema"})
+        this.diffTabs.push({"name":"request_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=request_schema"})
       }
       
     }

@@ -10,7 +10,7 @@ export function getApiDoc(map_id) {
 
 export function getApiDocTimeLines(document_id) {
     return request({
-        url: '/api/timeline',
+        url: '/api/timelines',
         method: 'get',
         params: { document_id: document_id }
     })

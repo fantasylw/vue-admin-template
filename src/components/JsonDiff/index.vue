@@ -1,7 +1,7 @@
 <template>
   <div>
   <body>
-    <link rel="stylesheet" href="https://json-diff.com/www/lib/codemirror/lib/codemirror.csss" charset="utf-8">
+    <link rel="stylesheet" href="https://json-diff.com/www/lib/codemirror/lib/codemirror.css" charset="utf-8">
     <link rel="stylesheet" href="https://json-diff.com/www/lib/codemirror/theme/tomorrow-night.css" charset="utf-8">
     <link rel="stylesheet" href="https://json-diff.com/css/main.css?cachebust=1" charset="utf-8">
     <div class="right" hidden="true">

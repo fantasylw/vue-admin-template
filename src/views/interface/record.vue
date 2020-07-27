@@ -22,6 +22,7 @@
         </sticky>
       </el-col>
       <el-col :xs="3" :sm="3" :md="3" :lg="3" :xl="3">
+        <Sticky :sticky-top="10">
         <div class="block" style="height:820px;">
           <el-scrollbar id="scrollbar-tree" style="height:100%;">
             <el-timeline v-for="item in timelines" :key="item">
@@ -33,8 +34,10 @@
             </el-timeline>
           </el-scrollbar>
         </div>
+        </Sticky>
       </el-col>
       <el-col :xs="3" :sm="4" :md="5" :lg="8" :xl="17">
+        <el-card>
           <el-collapse v-model="activeNames" v-for="diff in diffTabs" :key="diff" @change="handleChange">
             <el-collapse-item :title="diff.name" name="1">
                <div>
@@ -42,6 +45,7 @@
               </div>
             </el-collapse-item>
           </el-collapse>
+        </el-card>
       </el-col>
     </el-row>
   </div>
@@ -53,7 +57,6 @@ import Sticky from "@/components/Sticky";
 import JsonDiff from "@/components/JsonDiff";
 import { getHost } from "@/api/record";
 import { getApiDoc, getApiDocTimeLines } from "@/api/api";
-import { forEach } from '../../../www/js/underscore-min';
 export default {
   components: { Sticky,JsonDiff},
   data() {
@@ -70,7 +73,8 @@ export default {
       apidoc: {},
       outputFormat:"side-by-side",
       timelineUrl:null,
-      diffTabs:[]
+      diffTabs:[],
+      activeNames:['1']
     };
   },
   watch: {
@@ -102,32 +106,9 @@ export default {
     showTimeLine(item) {
       console.log(item);
       this.diffTabs = []
-      // 请求方法变更
-      if(item.diff != null){
-          if(item.diff.method[0]==false){
-            var tab = {"name":"method","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=method"}
-            this.diffTabs.push(tab)
-          }
-          // 查询参数变更
-          if(item.diff.query_schema[0]==false){
-            var tab = {"name":"query_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=query_schema"}
-            this.diffTabs.push(tab)
-          }
-          if(item.diff.reponse_schema[0]==false){
-            var tab = {"name":"reponse_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=reponse_schema"}
-            this.diffTabs.push(tab)
-          }
-          if(item.diff.request_schema[0]==false){
-            var tab = {"name":"request_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=request_schema"}
-            this.diffTabs.push(tab)
-          }
-      }
-      else{
         this.diffTabs.push({"name":"query_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=query_schema"})
-        this.diffTabs.push({"name":"reponse_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=reponse_schema"})
         this.diffTabs.push({"name":"request_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=request_schema"})
-      }
-      
+        this.diffTabs.push({"name":"reponse_schema","url":'http://127.0.0.1:8000/jsondiff/'+item._id+"?f=reponse_schema"})
     }
   }
 };

@@ -1,49 +1,102 @@
 <template>
-  <div>
-  <body>
-    <link rel="stylesheet" href="https://json-diff.com/www/lib/codemirror/lib/codemirror.css" charset="utf-8">
-    <link rel="stylesheet" href="https://json-diff.com/www/lib/codemirror/theme/tomorrow-night.css" charset="utf-8">
-    <link rel="stylesheet" href="https://json-diff.com/css/main.css?cachebust=1" charset="utf-8">
-    <div class="right" hidden="true">
-      <span id="error-message" style="display:none;"></span>
-      <label class="menu-item">light theme <input id="lighttheme-toggle" type="checkbox"/></label>
-
+  <div class="diff-inputs">
+    <div id="left-input" class="json-diff-input split">
+      <textarea id="json-diff-left"></textarea>
+      <span class="input-buttons">
+        <a class="input-collapse" href="#">–</a>
+        <a class="input-split" href="#">◫</a>
+        <a class="input-expand" href="#">☐</a>
+      </span>
     </div>
-    <div class="diff-inputs">
-      <div id="left-input" class="json-diff-input split">
-        <textarea id="json-diff-left"></textarea>
-        <span class="input-buttons">
-          <a class="input-collapse" href="#">–</a>
-          <a class="input-split" href="#">◫</a>
-          <a class="input-expand" href="#">☐</a>
-        </span>
-      </div>
-      <div id="right-input" class="json-diff-input split">
-        <textarea id="json-diff-right"></textarea>
-        <span class="input-buttons">
-          <a class="input-collapse" href="#">–</a>
-          <a class="input-split" href="#">◫</a>
-          <a class="input-expand" href="#">☐</a>
-        </span>
-      </div>
+    <div id="right-input" class="json-diff-input split">
+      <textarea id="json-diff-right"></textarea>
+      <span class="input-buttons">
+        <a class="input-collapse" href="#">–</a>
+        <a class="input-split" href="#">◫</a>
+        <a class="input-expand" href="#">☐</a>
+      </span>
     </div>
-   
-  </body>
-</div>
-
+  </div>
 </template>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-<script src="http://code.jquery.com/jquery-latest.js"></script>
-<script src="https://json-diff.com/www/lib/fast-json-patch/dist/json-patch-duplex.min.js" charset="utf-8"></script>
-<script src="https://json-diff.com/www/lib/backbone-events-standalone/backbone-events-standalone.min.js" charset="utf-8"></script>
-<script src="https://json-diff.com/www/lib/codemirror/lib/codemirror.js" charset="utf-8"></script>
-<script src="https://json-diff.com/www/lib/codemirror/lib/util/formatting.js" charset="utf-8"></script>
-<script src="https://json-diff.com/www/lib/codemirror/mode/javascript/javascript.js" charset="utf-8"></script>
-<script src="https://json-diff.com/www/lib/codemirror/addon/edit/matchbrackets.js" charset="utf-8"></script>
-<script src="https://json-diff.com/js/main.js" charset="utf-8"></script>
+
 <script>
+import initFunc from './static/js/main.js'
 export default {
-  name: 'json-diff',
-  data() {return {}}
+  name: 'Jsondiff',
+  props: {
+    left: Object,
+    right: Object
+  },
+  data () {
+    return {}
+  },
+  mounted () {
+    initFunc(this.left, this.right)
+    localStorage.setItem('lighttheme', true)
+    enableLightTheme();
+    var dontSaveDiffs = localStorage.getItem('dont-save-diffs');
+    if (dontSaveDiffs) {
+      $('#localstorage-toggle').get(0).checked = false;
+    }
+
+    $('#localstorage-toggle').on('change', function (e) {
+      if (!e.currentTarget.checked) {
+        localStorage.setItem('dont-save-diffs', true);
+        localStorage.removeItem('current-diff');
+        localStorage.removeItem('diff-history');
+      } else {
+        localStorage.removeItem('dont-save-diffs');
+      }
+
+    });
+
+    $('#left-input').on('click', '.input-collapse,.input-split,.input-expand', onPaneResizeLeftClick);
+    $('#right-input').on('click', '.input-collapse,.input-split,.input-expand', onPaneResizeRightClick);
+
+    function enableLightTheme() {
+      localStorage.setItem('lighttheme', true);
+      $('body').addClass('lighttheme');
+      setTheme('default');
+    }
+
+    function setTheme(theme) {
+      var views = getInputViews();
+      views.left.codemirror.setOption('theme', theme);
+      views.right.codemirror.setOption('theme', theme);
+      compareJson();
+    }
+
+    function onPaneResizeLeftClick(e) {
+      onResize(e, 'left');
+    }
+
+    function onPaneResizeRightClick(e) {
+      onResize(e, 'right');
+    }
+
+    function onResize(e, side) {
+      e.preventDefault();
+      var otherSide = side === 'left' ? 'right' : 'left';
+      var clickClass = e.currentTarget.className;
+      $('.json-diff-input').removeClass('split');
+      $('.json-diff-input').removeClass('expand');
+      $('.json-diff-input').removeClass('collapse');
+      var sideClass = 'split';
+      var otherSideClass = 'split';
+      if (clickClass === 'input-collapse') {
+        sideClass = 'collapse';
+        otherSideClass = 'expand';
+      } else if (clickClass === 'input-expand') {
+        sideClass = 'expand';
+        otherSideClass = 'collapse';
+      }
+      $('#' + side + '-input').addClass(sideClass);
+      $('#' + otherSide + '-input').addClass(otherSideClass);
+    }
+  }
 }
 </script>
+
+<style lang="css" src="./static/css/codemirror.css"></style>
+<style lang="css" src="./static/css/tomorrow-night.css"></style>
+<style lang="css" src="./static/css/main.css"></style>

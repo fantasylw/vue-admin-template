@@ -39,19 +39,126 @@
     <el-input v-model="form.name"></el-input>
   </el-form-item>
   <el-form-item label="项目详情">
-    <el-input type="textarea" v-model="form.details"></el-input>
+    <el-input type="textarea"  :rows="4" v-model="form.details"></el-input>
   </el-form-item>
+  <el-form-item label="项目图片">
+
+      <el-upload
+          class="avatar-uploader"
+          action="http://127.0.0.1:8000/image/upload"
+          :show-file-list="false"
+          v-model="form.imageId"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload">
+          <img v-if="imageUrl" :src="imageUrl" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+
+
+  </el-form-item>
+
+
+
   </el-form>
   <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="onSubmit">创 建</el-button>
+    <el-button type="primary" @click="creatProject">创 建</el-button>
   </span>
 </el-dialog>
 </div>
 
 </template>
 
+
+<script>
+import { projectAdd } from "@/api/project";
+
+export default {
+  data() {
+    return {
+        dialogVisible: false,
+        imagecropperKey: 0,
+        imageUrl: '',
+        upload_url:"http://127.0.0.1:8000/image/upload",
+        currentDate: new Date(),
+        projectlist:[
+            {
+                "id":1,
+                "name":"demo",
+                "img_url":"https://file.tapd.cn/img_dist/tcloud/default_homepage_logo-b2f5ba6bc1.png"
+            },
+            {
+                "name":"demo",
+                "img_url":"https://file.tapd.cn/img_dist/tcloud/default_homepage_logo-b2f5ba6bc1.png"
+            },
+            {
+                "name":"demo",
+                "img_url":"https://file.tapd.cn/img_dist/tcloud/default_homepage_logo-b2f5ba6bc1.png"
+            }
+        ],
+        form:{name: '',details:'',imageId:''}
+        };
+  },
+  methods: {
+      creatProject(){
+        console.log(this.form);
+        projectAdd(this.form).then(response => {
+            this.$message({
+                message: '项目创建成功！',
+                type: 'success'
+              });
+          });
+
+      },
+      handleAvatarSuccess(resData) {
+        console.log(resData);
+        this.form.imageId = resData.data._id
+        this.imageUrl = "http://127.0.0.1:8000/image/load?image_id="+resData.data._id
+      },
+      beforeAvatarUpload(file){
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('上传项目图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传项目图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
+      },
+      handleClose(){
+
+      }
+  }
+}
+</script>
+
+
 <style>
+ .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 .el-row {
     margin-bottom: 20px;
     &:last-child {
@@ -103,35 +210,3 @@
       clear: both
   }
 </style>
-
-<script>
-export default {
-  data() {
-    return {
-        dialogVisible: false,
-        currentDate: new Date(),
-        projectlist:[
-            {
-                "id":1,
-                "name":"demo",
-                "img_url":"https://file.tapd.cn/img_dist/tcloud/default_homepage_logo-b2f5ba6bc1.png"
-            },
-            {
-                "name":"demo",
-                "img_url":"https://file.tapd.cn/img_dist/tcloud/default_homepage_logo-b2f5ba6bc1.png"
-            },
-            {
-                "name":"demo",
-                "img_url":"https://file.tapd.cn/img_dist/tcloud/default_homepage_logo-b2f5ba6bc1.png"
-            }
-        ],
-        form:{name: '',details:''}
-        };
-  },
-  methods: {
-      onSubmit() {
-        console.log('submit!');
-      }
-  }
-}
-</script>

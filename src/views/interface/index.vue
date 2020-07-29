@@ -47,6 +47,7 @@
                     <el-col :span="12">上一版本</el-col>
                   </el-row>
                   <el-row>
+                    <Jsondiff style="width: 700px;height:500px;" :left="left" :right="right"></Jsondiff>
                     <iframe :src="diff.url" style="height:430px;width:100%"></iframe>
                   </el-row>
                   <el-row>
@@ -67,11 +68,11 @@
 <script>
 
 import Sticky from "@/components/Sticky";
-import JsonDiff from "@/components/JsonDiff";
+import Jsondiff from '@/components/Jsondiff';
 import { getHost } from "@/api/record";
 import { getApiDoc, getApiDocTimeLines } from "@/api/api";
 export default {
-  components: { Sticky,JsonDiff},
+  components: { Sticky,Jsondiff},
   data() {
     return {
       filterText: "",
@@ -87,7 +88,9 @@ export default {
       outputFormat:"side-by-side",
       timelineUrl:null,
       diffCollapse:[],
-      activeNames:['1']
+      activeNames:['1'],
+      left: "hhh",
+      right: { name: 1283, age: 'asdfadsf', school: 'diafhdsf' }
     };
   },
   watch: {

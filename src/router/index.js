@@ -95,9 +95,9 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/interface/record'),
+        path: '',
+        name: 'interface',
+        component: () => import('@/views/interface/index'),
         meta: { title: '接口记录', icon: 'form' }
       }
     ]

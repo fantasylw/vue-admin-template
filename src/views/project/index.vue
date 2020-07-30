@@ -39,7 +39,7 @@
     <el-input v-model="form.name"></el-input>
   </el-form-item>
   <el-form-item label="项目详情">
-    <el-input type="textarea"  :rows="4" v-model="form.details"></el-input>
+    <el-input type="textarea"  :rows="4" v-model="form.description"></el-input>
   </el-form-item>
   <el-form-item label="项目图片">
 
@@ -71,7 +71,7 @@
 
 
 <script>
-import { projectAdd } from "@/api/project";
+import { projectAdd,getProjectList } from "@/api/project";
 
 export default {
   data() {
@@ -96,7 +96,7 @@ export default {
                 "img_url":"https://file.tapd.cn/img_dist/tcloud/default_homepage_logo-b2f5ba6bc1.png"
             }
         ],
-        form:{name: '',details:'',imageId:''}
+        form:{name: '',description:'',imageId:''}
         };
   },
   methods: {
@@ -104,11 +104,19 @@ export default {
         console.log(this.form);
         projectAdd(this.form).then(response => {
             this.$message({
-                message: '项目创建成功！',
+                message: response,
                 type: 'success'
               });
           });
+          this.dialogVisible = false
 
+      },
+      getProjectListData(){
+        getProjectList().then(response =>{
+          console.log(response);
+
+        }
+        );
       },
       handleAvatarSuccess(resData) {
         console.log(resData);

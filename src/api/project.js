@@ -7,3 +7,10 @@ export function projectAdd(data) {
         data
     })
 }
+
+export function getProjectList() {
+    return request({
+        url: '/project/list',
+        method: 'get'
+    })
+}

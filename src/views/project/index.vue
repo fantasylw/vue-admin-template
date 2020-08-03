@@ -1,14 +1,16 @@
 <template>
 <div class="app-container">
     <el-row :gutter="20">
-        <el-col :span="4" v-for="project in projectlist" :key="project">
+        <el-col :span="4" v-for="(project,i) in projectlist" :key="project">
             <div class="grid-content bg-purple">
                 <el-card :body-style="{ padding: '0px' }">
-                    <img :src="project.img_url" class="image">
+                  <router-link to="/project/details">
+                    <img :src="project.img_url" class="image" @click="openProjectDetails(project)" >
+                     </router-link>
                     <div style="padding: 12px;">
                         <span>{{project.name}}</span>
                         <div class="bottom clearfix">
-                        <el-button type="text" class="button">编辑</el-button>
+                        <el-button type="text" class="button" @click="editProject(project,i)">编辑</el-button>
                         </div>
                     </div>
                 </el-card>
@@ -35,6 +37,9 @@
   width="30%"
   :before-close="handleClose">
   <el-form ref="form" :model="form" label-width="80px">
+    <el-form-item label="项目id" hidden="true">
+    <el-input v-model="form._id"></el-input>
+  </el-form-item>
   <el-form-item label="项目名称">
     <el-input v-model="form.name"></el-input>
   </el-form-item>
@@ -62,7 +67,7 @@
   </el-form>
   <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="creatProject">创 建</el-button>
+    <el-button type="primary" @click="creatProject">提 交</el-button>
   </span>
 </el-dialog>
 </div>
@@ -81,40 +86,34 @@ export default {
         imageUrl: '',
         upload_url:"http://127.0.0.1:8000/image/upload",
         currentDate: new Date(),
-        projectlist:[
-            {
-                "id":1,
-                "name":"demo",
-                "img_url":"https://file.tapd.cn/img_dist/tcloud/default_homepage_logo-b2f5ba6bc1.png"
-            },
-            {
-                "name":"demo",
-                "img_url":"https://file.tapd.cn/img_dist/tcloud/default_homepage_logo-b2f5ba6bc1.png"
-            },
-            {
-                "name":"demo",
-                "img_url":"https://file.tapd.cn/img_dist/tcloud/default_homepage_logo-b2f5ba6bc1.png"
-            }
-        ],
-        form:{name: '',description:'',imageId:''}
+        projectlist:this.getProjectListData(),
+        form:{_id:"", name: '',description:'',imageId:''},
+        editIndex:-1
         };
   },
   methods: {
       creatProject(){
-        console.log(this.form);
+ 
         projectAdd(this.form).then(response => {
             this.$message({
                 message: response,
                 type: 'success'
               });
+            console.log(response);
+            if(this.form._id==""){
+                this.projectlist.push(response.data);
+                }
+            else{
+              this.projectlist[this.editIndex] = response.data
+            };
+            this.dialogVisible = false;
           });
-          this.dialogVisible = false
+          
 
       },
       getProjectListData(){
         getProjectList().then(response =>{
-          console.log(response);
-
+          this.projectlist = response.data
         }
         );
       },
@@ -136,6 +135,17 @@ export default {
         return isJPG && isLt2M;
       },
       handleClose(){
+
+      },
+      editProject(project,i){
+        console.log(project);
+        this.dialogVisible = true;
+        this.imageUrl = project.img_url;
+        this.form = project;
+        this.editIndex = i
+      },
+      openProjectDetails(project){
+        console.log(project);
 
       }
   }
@@ -205,6 +215,7 @@ export default {
 
   .image {
     width: 100%;
+    height: 200px;
     display: block;
   }
 

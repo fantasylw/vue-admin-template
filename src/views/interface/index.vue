@@ -36,7 +36,7 @@
         </div>
         </Sticky>
       </el-col>
-      <el-col :xs="15" :sm="15" :md="16" :lg="16" :xl="17">
+      <el-col :xs="15" :sm="15" :md="16" :lg="17" :xl="17">
         <el-card>
           <span>JsonSchema</span>
           <el-collapse v-model="activeNames" v-for="diff in diffCollapse" :key="diff" @change="handleChange">
@@ -47,7 +47,6 @@
                     <el-col :span="12">上一版本</el-col>
                   </el-row>
                   <el-row>
-                    <Jsondiff style="width: 700px;height:500px;" :left="left" :right="right"></Jsondiff>
                     <iframe :src="diff.url" style="height:430px;width:100%"></iframe>
                   </el-row>
                   <el-row>
@@ -68,11 +67,10 @@
 <script>
 
 import Sticky from "@/components/Sticky";
-import Jsondiff from '@/components/Jsondiff';
 import { getHost } from "@/api/record";
 import { getApiDoc, getApiDocTimeLines } from "@/api/api";
 export default {
-  components: { Sticky,Jsondiff},
+  components: { Sticky},
   data() {
     return {
       filterText: "",

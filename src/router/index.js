@@ -47,12 +47,28 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/home',
-    children: [{
-      path: 'home',
-      name: 'Home',
-      component: () => import('@/views/project/index'),
-      meta: { title: '主页', icon: 'el-icon-s-home' }
-    }]
+    children: [
+      {
+        path: 'home',
+        name: 'Home',
+        component: () => import('@/views/project/index'),
+        meta: { title: '主页', icon: 'el-icon-s-home' }
+      }
+  ]
+  },
+  {
+    path: '/project',
+    component: Layout,
+    redirect: '/details',
+    meta: { title: '项目管理', icon: 'el-icon-s-home' },
+    children: [
+      {
+        path: 'details',
+        component: () => import('@/views/project/details/index'),
+        name: 'details',
+        meta: { title: '项目详情' }
+      },
+    ]
   },
 
   {

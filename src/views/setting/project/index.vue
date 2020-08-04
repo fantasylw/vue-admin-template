@@ -25,7 +25,7 @@
         <Sticky :sticky-top="10">
         <div class="block" style="height:820px;">
           <el-scrollbar id="scrollbar-tree" style="height:100%;">
-            <el-timeline v-for="item in timelines" :key="item">
+            <el-timeline v-for="(item, index)  in timelines" :key="index">
               <el-timeline-item :timestamp="item.createdAt" placement="top">
                 <el-card shadow="hover" @click.native="showTimeLine(item)">
                   {{item.msg}}
@@ -39,7 +39,7 @@
       <el-col :xs="15" :sm="15" :md="16" :lg="16" :xl="17">
         <el-card>
           <span>JsonSchema</span>
-          <el-collapse v-model="activeNames" v-for="diff in diffCollapse" :key="diff" @change="handleChange">
+          <el-collapse v-model="activeNames" v-for="diff in diffCollapse" :key="diff._id" @change="handleChange">
             <el-collapse-item :title="diff.name" name="1">
                <div>
                   <el-row>
@@ -47,7 +47,9 @@
                     <el-col :span="12">上一版本</el-col>
                   </el-row>
                   <el-row>
-                    <json-diff style="width: 700px;height:500px;" :left="left" :right="right"></json-diff>
+       
+                    <json-diff :left="diff" :right="diff"></json-diff>
+
                   </el-row>
                   <el-row>
                       <el-button type="success">正确</el-button>
@@ -71,7 +73,9 @@ import Jsondiff from "@/components/Jsondiff";
 import { getHost } from "@/api/record";
 import { getApiDoc, getApiDocTimeLines } from "@/api/api";
 export default {
-  components: { Sticky,Jsondiff},
+  components: {
+    Sticky,
+     'json-diff': Jsondiff},
   data() {
     return {
       filterText: "",
@@ -88,8 +92,8 @@ export default {
       timelineUrl:null,
       diffCollapse:[],
       activeNames:['1'],
-      left:"hjh",
-      right: "jjj"
+      left:{},
+      right: {}
     };
   },
   watch: {
@@ -118,6 +122,7 @@ export default {
         });
       }
     },
+    handleChange(){},
     showTimeLine(item) {
       console.log(item);
       this.diffCollapse = []

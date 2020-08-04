@@ -4,7 +4,7 @@
         <el-col :span="4" v-for="(project,i) in projectlist" :key="project">
             <div class="grid-content bg-purple">
                 <el-card :body-style="{ padding: '0px' }">
-                  <router-link to="/project/details">
+                  <router-link :to="{path:'/project/details',query: {_id: project._id}}">
                     <img :src="project.img_url" class="image" @click="openProjectDetails(project)" >
                      </router-link>
                     <div style="padding: 12px;">
@@ -88,7 +88,8 @@ export default {
         currentDate: new Date(),
         projectlist:this.getProjectListData(),
         form:{_id:"", name: '',description:'',imageId:''},
-        editIndex:-1
+        editIndex:-1,
+        _id:"ff"
         };
   },
   methods: {

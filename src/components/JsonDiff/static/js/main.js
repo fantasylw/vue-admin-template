@@ -1,4 +1,4 @@
-export default function (leftObj = {}, rightObj = {}) {
+export default function (leftObj = {}, rightObj = {}, params = {}) {
   // console.log('run mainaian')
   _.templateSettings = {
     interpolate: /\{\{(.+?)\}\}/g
@@ -11,7 +11,7 @@ export default function (leftObj = {}, rightObj = {}) {
   var diffHistoryStr = localStorage.getItem('diff-history');
   var diffHistory = diffHistoryStr ? JSON.parse(diffHistoryStr) : [];
   var dontTriggerSaveDiff = false;
-  renderDiffHistory();
+  // renderDiffHistory();
 
   function JsonInputView(el, initialText) {
     this.el = el;
@@ -129,8 +129,8 @@ export default function (leftObj = {}, rightObj = {}) {
   }
   // var currentDiff = null
 
-  var leftInputView = new JsonInputView(document.getElementById('json-diff-left'), currentDiff && currentDiff.left);
-  var rightInputView = new JsonInputView(document.getElementById('json-diff-right'), currentDiff && currentDiff.right);
+  var leftInputView = new JsonInputView(params.leftTextarea, currentDiff && currentDiff.left);
+  var rightInputView = new JsonInputView(params.rightTextarea, currentDiff && currentDiff.right);
   leftInputView.on('change', onInputChange);
   rightInputView.on('change', onInputChange);
   leftInputView.codemirror.on('scroll', function () {
@@ -149,7 +149,7 @@ export default function (leftObj = {}, rightObj = {}) {
   function onInputChange() {
     compareJson();
     saveDiff();
-    debouncedSaveHistory();
+    // debouncedSaveHistory();
   }
 
   function compareJson() {
@@ -241,7 +241,7 @@ export default function (leftObj = {}, rightObj = {}) {
     $('#history-container').html(html);
   }
 
-  window.getInputViews = function() {
+  window.getInputViews = function getInputViews () {
     return {
       left: leftInputView,
       right: rightInputView
@@ -256,5 +256,9 @@ export default function (leftObj = {}, rightObj = {}) {
     }
     leftInputView.setText(diff.left);
     rightInputView.setText(diff.right);
+  }
+  return {
+    getInputViews,
+    compareJson
   }
 }

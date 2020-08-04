@@ -1,15 +1,15 @@
 <template>
   <div class="diff-inputs">
-    <div id="left-input" class="json-diff-input split">
-      <textarea id="json-diff-left"></textarea>
+    <div ref="leftInput" class="json-diff-input split">
+      <textarea ref="leftTextarea"></textarea>
       <span class="input-buttons">
         <a class="input-collapse" href="#">–</a>
         <a class="input-split" href="#">◫</a>
         <a class="input-expand" href="#">☐</a>
       </span>
     </div>
-    <div id="right-input" class="json-diff-input split">
-      <textarea id="json-diff-right"></textarea>
+    <div ref="rightInput" class="json-diff-input split">
+      <textarea ref="rightTextarea"></textarea>
       <span class="input-buttons">
         <a class="input-collapse" href="#">–</a>
         <a class="input-split" href="#">◫</a>
@@ -22,7 +22,7 @@
 <script>
 import initFunc from './static/js/main.js'
 export default {
-  name: 'Jsondiff',
+  name: 'json-diff',
   props: {
     left: Object,
     right: Object
@@ -31,27 +31,30 @@ export default {
     return {}
   },
   mounted () {
-    initFunc(this.left, this.right)
+    let { getInputViews, compareJson } = initFunc(this.left, this.right, {
+      leftTextarea: this.$refs.leftTextarea,
+      rightTextarea: this.$refs.rightTextarea
+    })
     localStorage.setItem('lighttheme', true)
     enableLightTheme();
-    var dontSaveDiffs = localStorage.getItem('dont-save-diffs');
-    if (dontSaveDiffs) {
-      $('#localstorage-toggle').get(0).checked = false;
-    }
+    // var dontSaveDiffs = localStorage.getItem('dont-save-diffs');
+    // if (dontSaveDiffs) {
+    //   $('#localstorage-toggle').get(0).checked = false;
+    // }
 
-    $('#localstorage-toggle').on('change', function (e) {
-      if (!e.currentTarget.checked) {
-        localStorage.setItem('dont-save-diffs', true);
-        localStorage.removeItem('current-diff');
-        localStorage.removeItem('diff-history');
-      } else {
-        localStorage.removeItem('dont-save-diffs');
-      }
+    // $('#localstorage-toggle').on('change', function (e) {
+    //   if (!e.currentTarget.checked) {
+    //     localStorage.setItem('dont-save-diffs', true);
+    //     localStorage.removeItem('current-diff');
+    //     localStorage.removeItem('diff-history');
+    //   } else {
+    //     localStorage.removeItem('dont-save-diffs');
+    //   }
 
-    });
+    // });
 
-    $('#left-input').on('click', '.input-collapse,.input-split,.input-expand', onPaneResizeLeftClick);
-    $('#right-input').on('click', '.input-collapse,.input-split,.input-expand', onPaneResizeRightClick);
+    $(this.$refs.leftInput).on('click', '.input-collapse,.input-split,.input-expand', onPaneResizeLeftClick.bind(this));
+    $(this.$refs.rightInput).on('click', '.input-collapse,.input-split,.input-expand', onPaneResizeRightClick.bind(this));
 
     function enableLightTheme() {
       localStorage.setItem('lighttheme', true);
@@ -67,20 +70,24 @@ export default {
     }
 
     function onPaneResizeLeftClick(e) {
-      onResize(e, 'left');
+      onResize.call(this, e, 'left');
     }
 
     function onPaneResizeRightClick(e) {
-      onResize(e, 'right');
+      onResize.call(this, e, 'right');
     }
 
     function onResize(e, side) {
       e.preventDefault();
       var otherSide = side === 'left' ? 'right' : 'left';
       var clickClass = e.currentTarget.className;
-      $('.json-diff-input').removeClass('split');
-      $('.json-diff-input').removeClass('expand');
-      $('.json-diff-input').removeClass('collapse');
+      const removeClass = function (dom) {
+        dom.removeClass('split');
+        dom.removeClass('expand');
+        dom.removeClass('collapse');
+      }
+      removeClass($(this.$refs.leftInput))
+      removeClass($(this.$refs.rightInput))
       var sideClass = 'split';
       var otherSideClass = 'split';
       if (clickClass === 'input-collapse') {
@@ -90,8 +97,8 @@ export default {
         sideClass = 'expand';
         otherSideClass = 'collapse';
       }
-      $('#' + side + '-input').addClass(sideClass);
-      $('#' + otherSide + '-input').addClass(otherSideClass);
+      $(this.$refs[`${side}Input`]).addClass(sideClass);
+      $(this.$refs[`${otherSide}Input`]).addClass(otherSideClass);
     }
   }
 }
@@ -99,4 +106,4 @@ export default {
 
 <style lang="css" src="./static/css/codemirror.css"></style>
 <style lang="css" src="./static/css/tomorrow-night.css"></style>
-<style lang="css" src="./static/css/main.css"></style>
+<style lang="css" src="./static/css/main.css" scoped></style>
